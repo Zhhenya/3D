@@ -71,8 +71,8 @@ public class DrawFigure{
         planeButtons[1] = addRadiobutton("YZ", groupPlaneButtons, 1100, 20, 50, 50, false);
         planeButtons[2] = addRadiobutton("ZX", groupPlaneButtons, 1150, 20, 50, 50, false);
         planeButtons[3] = addRadiobutton("CAB", groupPlaneButtons, 1200, 20, 50, 50, false);
-      //  planeButtons[4] = addRadiobutton("Q", groupPlaneButtons, 1250, 20, 50, 50, false);
-        anchorPane.getChildren().addAll(planeButtons[0], planeButtons[1], planeButtons[2], planeButtons[3], planeLabel, planeO);
+        planeButtons[4] = addRadiobutton("Q", groupPlaneButtons, 1250, 20, 50, 50, false);
+        anchorPane.getChildren().addAll(planeButtons[0], planeButtons[1], planeButtons[2], planeButtons[3], planeButtons[4], planeLabel, planeO);
 
         //кнопки выбора оси вращения
         Label rotationLabel = new Label("Поворот по оси");
@@ -118,6 +118,8 @@ public class DrawFigure{
 
 
 
+
+
         ProjectionMatrix projectionMatrix = new ProjectionMatrix();
         projectionMatrix.getXY();
         draw(pane, figure, projectionMatrix, Plane.XY);
@@ -157,15 +159,6 @@ public class DrawFigure{
                 matrix.getQ();
                 draw(pane, figure, matrix, Plane.Q);
                 break;
-               /* Q matrixQ = new Q();
-                matrixQ.getQ();
-                matrix.getXY();
-                Figure figureQ = new Figure();
-                figureQ.initFigureMatrix();
-                for(int i = 0; i < numberOfVertex; i++)
-                    figureQ.matrix[i] = matrixQ.multiply(figure.matrix[i]);
-                draw(pane, figureQ, matrix, Plane.XY);*/
-             //   break;
 
         }
     }
@@ -174,14 +167,22 @@ public class DrawFigure{
     private void draw(Pane pane, Figure figure, Transformation matrix, Plane plane) {
         Figure figureForDraw = new Figure();
         figureForDraw.initFigureMatrix();
+        double[] coodrAxis = convert(new double[]{-600, 0, 600, 0});
+
         for(int i = 0; i < numberOfVertex; i++)
-            figureForDraw.matrix[i] = matrix.multiply(figure.matrix[i]);
+            figureForDraw.matrix[i] = matrix.norm(matrix.multiply(figure.matrix[i]));
+
         //отрисовка лицевой части
         drawFigure(pane, matrix, figureForDraw, 0, 3, plane);
         //отрисовка задней части
         drawFigure(pane, matrix, figureForDraw, 1, 2, plane);
         //отрисовка середины
         drawFigure(pane, figureForDraw, plane);
+
+        Line axisOne = new Line(coodrAxis[0], coodrAxis[1], coodrAxis[2], coodrAxis[3]);
+        coodrAxis = convert(new double[]{0, -600, 0, 600});
+        Line axisTwo= new Line(coodrAxis[0], coodrAxis[1], coodrAxis[2], coodrAxis[3]);
+        pane.getChildren().addAll(axisOne, axisTwo);
 
     }
 
